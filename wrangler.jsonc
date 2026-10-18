@@ -3,6 +3,7 @@
   "name": "shanyraq-hub-web",
   "main": "@tanstack/react-start/server-entry",
   "compatibility_date": "2026-10-18",
+  "compatibility_flags": ["nodejs_compat"],
   "observability": {
     "enabled": true
   }
