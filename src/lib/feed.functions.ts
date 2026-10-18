@@ -70,8 +70,14 @@ export interface FeedItem {
 }
 
 function publicClient() {
-  const key = process.env["SUPABASE_PUBLISHABLE_KEY"];
-  const url = process.env["SUPABASE_URL"];
+  // Workers runtime variables take priority. Build-time VITE_ values are
+  // public Supabase settings only, never administrative/secret credentials.
+  const key =
+    (typeof process !== "undefined" && process.env["SUPABASE_PUBLISHABLE_KEY"]) ||
+    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  const url =
+    (typeof process !== "undefined" && process.env["SUPABASE_URL"]) ||
+    import.meta.env.VITE_SUPABASE_URL;
   if (!key || !url) {
     throw new Error("Missing SUPABASE_URL or SUPABASE_PUBLISHABLE_KEY on the server.");
   }
