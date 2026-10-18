@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.lovable.yraq_hub.twa",
+      "sha256_cert_fingerprints": [
+        "25:69:97:B6:C8:D9:0E:4F:1D:5B:CC:AF:B9:6D:26:7A:63:7E:C1:04:48:2E:F6:EB:C1:AC:CB:FA:29:FD:86:7C"
+      ]
+    }
+  }
+]
