@@ -1,0 +1,10 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Cloudflare-дағы Worker атауымен бірдей болуы керек
+  "name": "shanyraq-hub-web",
+  "compatibility_date": "2025-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  // vite.config.cloudflare.ts ішіндегі tanstackStart({ server: { entry: "server" } })
+  "main": "./src/server.ts",
+  "observability": { "enabled": true }
+}
