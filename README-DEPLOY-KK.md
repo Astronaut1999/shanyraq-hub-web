@@ -65,3 +65,5 @@ Worker → Settings → Variables & Secrets арқылы келесі атаул
 - Кез келген username/password/private key-ді чатқа скрин күйінде көрсетпеңіз.
 
 Ескерту: бұл жерде толық `npm install` + Cloudflare deploy орындалған жоқ, сондықтан жоба жарияланбай тұрып cloud build logs арқылы тексерілуі керек.
+
+
