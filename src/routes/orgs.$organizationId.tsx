@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { BadgeCheck, CalendarDays, Download, Eye, Link2, Mail, MapPin, Phone, UserRound, Users } from "lucide-react";
+import { Armchair, BadgeCheck, CalendarDays, Download, Eye, Link2, Mail, MapPin, Phone, UserRound, Users } from "lucide-react";
 import { ORGANIZATION_TYPE_LABELS } from "@/lib/regions";
 import { useMemo, useState } from "react";
 
@@ -166,6 +166,7 @@ function OrganizationProfilePage() {
             <div className="divide-y rounded-2xl border bg-card px-4">
               <InfoRow icon={UserRound} label="Басшысы" value={org.director_name} />
               <InfoRow icon={Users} label="Қызметкерлер" value={org.staff_count != null ? String(org.staff_count) : null} />
+              <InfoRow icon={Armchair} label="Орын саны" value={org.seat_count != null ? String(org.seat_count) : null} />
               <InfoRow icon={MapPin} label="Мекенжай" value={org.address} />
               <InfoRow icon={Phone} label="Телефон" value={org.phone} href={org.phone ? `tel:${org.phone}` : undefined} />
               <InfoRow icon={Mail} label="Пошта" value={org.email} href={org.email ? `mailto:${org.email}` : undefined} />

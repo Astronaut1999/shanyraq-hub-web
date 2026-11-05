@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Building2, CalendarDays, Images, MapPin, UserRound, Users } from "lucide-react";
+import { Armchair, ArrowLeft, Building2, CalendarDays, Images, MapPin, UserRound, Users } from "lucide-react";
 import { useState } from "react";
 
 import { PublicShell } from "@/components/layout/PublicShell";
@@ -67,6 +67,7 @@ function RegionPage() {
                   <Meta icon={MapPin} value={org.settlement ?? org.locality} />
                   <Meta icon={UserRound} value={org.director_name} />
                   <Meta icon={Users} value={org.staff_count != null ? `${org.staff_count} қызметкер` : null} />
+                  <Meta icon={Armchair} value={org.seat_count != null ? `${org.seat_count} орын` : null} />
                   <div className="flex gap-3 pt-1 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1"><CalendarDays className="size-3.5" />{org.events_count}</span>
                     <span className="flex items-center gap-1"><Images className="size-3.5" />{org.media_count}</span>

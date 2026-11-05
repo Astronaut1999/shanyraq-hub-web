@@ -24,6 +24,7 @@ export interface OrganizationInput {
   organization_type?: Exclude<Organization["organization_type"], undefined>;
   director_name?: string | null;
   staff_count?: number | null;
+  seat_count?: number | null;
   source_url?: string | null;
   verified_at?: string | null;
 }

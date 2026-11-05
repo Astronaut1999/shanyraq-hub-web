@@ -20,6 +20,7 @@ export interface Organization {
   organization_type?: "district_center" | "house_of_culture" | "rural_house" | "club" | "leisure_center" | null;
   director_name?: string | null;
   staff_count?: number | null;
+  seat_count?: number | null;
   source_url?: string | null;
   verified_at?: string | null;
   created_at: string;

@@ -19,6 +19,7 @@ export interface PublicOrganization {
   organization_type: OrganizationTypeValue | null;
   director_name: string | null;
   staff_count: number | null;
+  seat_count: number | null;
   source_url: string | null;
   verified_at: string | null;
   events_count: number;
@@ -37,7 +38,7 @@ export interface PublicRegion {
 }
 
 const ORG_COLUMNS =
-  "id, name, description, locality, address, phone, email, avatar_path, cover_path, region_id, settlement, organization_type, director_name, staff_count, source_url, verified_at, regions(name)";
+  "id, name, description, locality, address, phone, email, avatar_path, cover_path, region_id, settlement, organization_type, director_name, staff_count, seat_count, source_url, verified_at, regions(name)";
 
 export interface PublicEventMedia {
   id: string;
@@ -157,6 +158,7 @@ type OrgRow = {
   organization_type: OrganizationTypeValue | null;
   director_name: string | null;
   staff_count: number | null;
+  seat_count: number | null;
   source_url: string | null;
   verified_at: string | null;
   regions: { name: string } | null;
@@ -200,6 +202,7 @@ function publicOrganization(
     organization_type: row.organization_type,
     director_name: row.director_name,
     staff_count: row.staff_count,
+    seat_count: row.seat_count,
     source_url: row.source_url,
     verified_at: row.verified_at,
     events_count: counts?.events.get(row.id) ?? 0,

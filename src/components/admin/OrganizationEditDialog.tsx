@@ -31,6 +31,7 @@ export function OrganizationEditDialog({ organization }: { organization: Organiz
     email: organization.email ?? "",
     director_name: organization.director_name ?? "",
     staff_count: organization.staff_count != null ? String(organization.staff_count) : "",
+    seat_count: organization.seat_count != null ? String(organization.seat_count) : "",
     source_url: organization.source_url ?? "",
     region_id: organization.region_id ?? NONE,
     organization_type: organization.organization_type ?? NONE,
@@ -48,6 +49,8 @@ export function OrganizationEditDialog({ organization }: { organization: Organiz
     mutationFn: async () => {
       const staff = form.staff_count.trim() === "" ? null : Number(form.staff_count);
       if (staff !== null && (!Number.isInteger(staff) || staff < 0)) throw new Error("Қызметкер саны бүтін сан болуы керек.");
+      const seats = form.seat_count.trim() === "" ? null : Number(form.seat_count);
+      if (seats !== null && (!Number.isInteger(seats) || seats < 0)) throw new Error("Орын саны бүтін сан болуы керек.");
       const avatarPath = avatar ? await uploadOrganizationImage(organization.id, "avatar", avatar) : organization.avatar_path;
       const coverPath = cover ? await uploadOrganizationImage(organization.id, "cover", cover) : organization.cover_path;
       const orNull = (value: string) => value.trim() || null;
@@ -61,6 +64,7 @@ export function OrganizationEditDialog({ organization }: { organization: Organiz
         email: orNull(form.email),
         director_name: orNull(form.director_name),
         staff_count: staff,
+        seat_count: seats,
         source_url: orNull(form.source_url),
         avatar_path: avatarPath,
         cover_path: coverPath,
@@ -118,6 +122,7 @@ export function OrganizationEditDialog({ organization }: { organization: Organiz
             <Field label="Мекенжай" htmlFor={id("address")}><Input id={id("address")} value={form.address} onChange={set("address")} /></Field>
             <Field label="Басшысы" htmlFor={id("director")}><Input id={id("director")} value={form.director_name} onChange={set("director_name")} /></Field>
             <Field label="Қызметкер саны" htmlFor={id("staff")}><Input id={id("staff")} type="number" min={0} inputMode="numeric" value={form.staff_count} onChange={set("staff_count")} /></Field>
+            <Field label="Орын саны (сыйымдылығы)" htmlFor={id("seats")}><Input id={id("seats")} type="number" min={0} inputMode="numeric" value={form.seat_count} onChange={set("seat_count")} /></Field>
             <Field label="Телефон" htmlFor={id("phone")}><Input id={id("phone")} value={form.phone} onChange={set("phone")} /></Field>
             <Field label="Пошта" htmlFor={id("email")}><Input id={id("email")} type="email" value={form.email} onChange={set("email")} /></Field>
           </div>

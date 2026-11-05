@@ -455,6 +455,7 @@ export type Database = {
             | null
           phone: string | null
           region_id: string | null
+          seat_count: number | null
           settlement: string | null
           source_url: string | null
           staff_count: number | null
@@ -480,6 +481,7 @@ export type Database = {
             | null
           phone?: string | null
           region_id?: string | null
+          seat_count?: number | null
           settlement?: string | null
           source_url?: string | null
           staff_count?: number | null
@@ -505,6 +507,7 @@ export type Database = {
             | null
           phone?: string | null
           region_id?: string | null
+          seat_count?: number | null
           settlement?: string | null
           source_url?: string | null
           staff_count?: number | null
