@@ -50,6 +50,7 @@ export function MediaUploader({
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState<{ done: number; total: number; percentage: number } | null>(null);
   const [paused, setPaused] = useState(false);
+  const [compressing, setCompressing] = useState<number | null>(null);
   const handleRef = useRef<ResumableHandle | null>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
@@ -110,7 +111,9 @@ export function MediaUploader({
           onHandle: (handle) => {
             handleRef.current = handle;
           },
+          onCompressProgress: (percentage) => setCompressing(percentage),
         });
+        setCompressing(null);
         uploadedCount += 1;
       }
       for (const item of selected) URL.revokeObjectURL(item.previewUrl);
@@ -125,6 +128,7 @@ export function MediaUploader({
     } finally {
       handleRef.current = null;
       setProgress(null);
+      setCompressing(null);
       setUploading(false);
     }
   }
@@ -216,6 +220,7 @@ export function MediaUploader({
                   {item.optimized?.optimized
                     ? ` → ${formatBytes(item.optimized.optimizedSize)} (оңтайландырылды)`
                     : ""}
+                  {item.file.type.startsWith("video/") ? " · жүктеу кезінде 720p-ге сығылады" : ""}
                 </p>
               </div>
               <Button
@@ -270,6 +275,15 @@ export function MediaUploader({
           rows={3}
         />
       </div>
+
+      {compressing !== null ? (
+        <div className="space-y-2">
+          <Progress value={compressing} />
+          <p className="text-xs text-muted-foreground">
+            Видео сығылуда (орын үнемдеу үшін)… {compressing}%. Бетті жаппаңыз.
+          </p>
+        </div>
+      ) : null}
 
       {progress ? (
         <div className="space-y-2">

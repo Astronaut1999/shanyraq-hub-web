@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { optimizeImage } from "./image-optimize";
+import { compressVideo } from "./video-compress";
 import { needsResumableUpload, resumableUpload, type ResumableHandle, type UploadProgress } from "./resumable-upload";
 import type { MediaItem, MediaItemWithUrl, MediaKind } from "./types";
 
@@ -9,7 +10,10 @@ export const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"
 export const VIDEO_TYPES = ["video/mp4", "video/webm", "video/quicktime"];
 
 export const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10 MB
-export const MAX_VIDEO_SIZE = 100 * 1024 * 1024; // 100 MB
+/** Largest video a user may pick; it is compressed in the browser before upload. */
+export const MAX_VIDEO_SIZE = 500 * 1024 * 1024; // 500 MB
+/** Largest video actually stored (after compression). Keeps the free 1 GB storage plan alive. */
+export const MAX_STORED_VIDEO_SIZE = 60 * 1024 * 1024; // 60 MB ≈ 6 minutes at 720p
 
 export function validateMediaFile(file: File): { kind: MediaKind } {
   if (IMAGE_TYPES.includes(file.type)) {
@@ -20,7 +24,7 @@ export function validateMediaFile(file: File): { kind: MediaKind } {
   }
   if (VIDEO_TYPES.includes(file.type)) {
     if (file.size > MAX_VIDEO_SIZE) {
-      throw new Error("Видео өлшемі 100 МБ-тан аспауы керек.");
+      throw new Error("Видео өлшемі 500 МБ-тан аспауы керек.");
     }
     return { kind: "video" };
   }
@@ -101,11 +105,14 @@ export interface UploadMediaParams {
   planItemId?: string | null;
   onProgress?: (progress: UploadProgress) => void;
   onHandle?: (handle: ResumableHandle) => void;
+  /** Video compression progress, 0–100. */
+  onCompressProgress?: (percentage: number) => void;
 }
 
 /**
  * Uploads one photo or video.
  * Photos are resized/compressed and get a lightweight thumbnail for list cards.
+ * Videos are re-encoded to 720p MP4 in the browser (see video-compress.ts).
  * Large files and all videos use resumable (TUS) uploads so a dropped connection
  * can continue instead of restarting. The database row is only created after the
  * storage object has actually finished uploading, which prevents duplicate or
@@ -120,6 +127,16 @@ export async function uploadMedia(params: UploadMediaParams): Promise<void> {
     const optimized = await optimizeImage(params.file);
     file = optimized.file;
     thumbnail = optimized.thumbnail;
+  } else {
+    const compressed = await compressVideo(params.file, params.onCompressProgress);
+    file = compressed.file;
+    if (file.size > MAX_STORED_VIDEO_SIZE) {
+      throw new Error(
+        compressed.compressed
+          ? "Видео тым ұзын (сығылғаннан кейін де 60 МБ-тан асады). Шамамен 6 минуттан қысқа видео жүктеңіз."
+          : "Бұл браузер видеоны сыға алмайды, ал файл 60 МБ-тан үлкен. Chrome браузерінде ашып көріңіз немесе қысқарақ видео жүктеңіз.",
+      );
+    }
   }
 
   const ext = file.name.split(".").pop() ?? "bin";
