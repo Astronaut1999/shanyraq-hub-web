@@ -1,0 +1,71 @@
+# Шаңырақ Хаб — iOS қосымшасын Codemagic бұлтында құрастыру (Mac керек емес).
+# Екі жұмыс бар:
+#   ios-test    — Apple аккаунтсыз. Қосымша дұрыс құрастырылатынын тексереді,
+#                 iPhone симуляторына арналған файл береді (appetize.io-да көруге болады).
+#   ios-release — Apple Developer аккаунты (99 $/жыл) болғанда ғана. TestFlight-қа жібереді.
+# Екеуі де тек қолмен іске қосылады (Start new build), минут бекер кетпейді.
+
+workflows:
+  ios-test:
+    name: iOS тест (Apple аккаунтсыз)
+    instance_type: mac_mini_m2
+    max_build_duration: 30
+    environment:
+      node: 24
+      xcode: latest
+    scripts:
+      - name: Пакеттерді орнату
+        script: cd mobile && npm install --no-audit --no-fund
+      - name: iOS жобасын жасау
+        script: cd mobile && bash scripts/prepare-ios.sh
+      - name: Симуляторға құрастыру (қолтаңбасыз)
+        script: |
+          cd mobile
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+          cd build/Build/Products/Debug-iphonesimulator
+          zip -qry "$CM_BUILD_DIR/ShanyraqHub-simulator.zip" App.app
+    artifacts:
+      - ShanyraqHub-simulator.zip
+
+  ios-release:
+    name: iOS → TestFlight (Apple аккаунт керек)
+    instance_type: mac_mini_m2
+    max_build_duration: 45
+    integrations:
+      # Codemagic → Team settings → Integrations → App Store Connect
+      # бөлімінде кілтті дәл осы атпен қосу керек:
+      app_store_connect: Shanyraq ASC key
+    environment:
+      node: 24
+      xcode: latest
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: kz.shanyraq.hub
+    scripts:
+      - name: Пакеттерді орнату
+        script: cd mobile && npm install --no-audit --no-fund
+      - name: iOS жобасын жасау
+        script: cd mobile && bash scripts/prepare-ios.sh
+      - name: Қолтаңба профильдерін қосу
+        script: xcode-project use-profiles --project mobile/ios/App/App.xcodeproj
+      - name: Құрастыру нөмірін көбейту
+        script: |
+          sed -i '' "s/CURRENT_PROJECT_VERSION = [0-9]*;/CURRENT_PROJECT_VERSION = ${BUILD_NUMBER};/g" \
+            mobile/ios/App/App.xcodeproj/project.pbxproj
+      - name: .ipa құрастыру
+        script: xcode-project build-ipa --project mobile/ios/App/App.xcodeproj --scheme App
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true

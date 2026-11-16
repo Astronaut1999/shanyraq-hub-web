@@ -1,0 +1,15 @@
+{
+  "name": "shanyraq-hub-mobile",
+  "private": true,
+  "description": "Шаңырақ Хаб iOS қабығы (Capacitor). Сайттың өзін ашады.",
+  "scripts": {
+    "prepare-ios": "bash scripts/prepare-ios.sh"
+  },
+  "dependencies": {
+    "@capacitor/core": "8.6.2",
+    "@capacitor/ios": "8.6.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.6.2"
+  }
+}

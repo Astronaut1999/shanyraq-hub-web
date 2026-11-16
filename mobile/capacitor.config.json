@@ -1,0 +1,14 @@
+{
+  "appId": "kz.shanyraq.hub",
+  "appName": "Шаңырақ Хаб",
+  "webDir": "www",
+  "server": {
+    "url": "https://shanyraq-hub-web.zumagaliturgunbaev7.workers.dev",
+    "cleartext": false,
+    "errorPath": "index.html"
+  },
+  "ios": {
+    "backgroundColor": "#0b1a33",
+    "limitsNavigationsToAppBoundDomains": false
+  }
+}
