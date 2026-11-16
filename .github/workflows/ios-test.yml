@@ -1,0 +1,46 @@
+# Шаңырақ Хаб — iOS тест құрастыру (Apple аккаунтсыз, Mac-сыз).
+# GitHub-тың өз Mac серверінде жүреді. Ашық (public) репо үшін тегін.
+# Іске қосу: GitHub → Actions → "iOS тест" → Run workflow.
+name: iOS тест
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ios-simulator:
+    runs-on: macos-15
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Пакеттерді орнату
+        run: npm install --no-audit --no-fund
+
+      - name: iOS жобасын жасау
+        run: bash scripts/prepare-ios.sh
+
+      - name: Симуляторға құрастыру (қолтаңбасыз)
+        run: |
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+          cd build/Build/Products/Debug-iphonesimulator
+          zip -qry "$GITHUB_WORKSPACE/ShanyraqHub-simulator.zip" App.app
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ShanyraqHub-simulator
+          path: ShanyraqHub-simulator.zip
